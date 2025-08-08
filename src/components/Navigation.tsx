@@ -10,7 +10,6 @@ export default function Navigation() {
     { name: 'Dashboard', href: '/', icon: '📊' },
     { name: 'Quests', href: '/quests', icon: '🎯' },
     { name: 'Rewards', href: '/rewards', icon: '🏆' },
-    { name: 'Notifications', href: '/notifications', icon: '📢' },
   ];
 
   return (
