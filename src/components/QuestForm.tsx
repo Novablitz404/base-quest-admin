@@ -20,6 +20,9 @@ export default function QuestForm({ quest, onSubmit, onCancel, loading = false }
       targetDate: '',
       activityCount: 0,
       streakDays: 0,
+      shareCount: 0,
+      shareContent: '',
+      dailyShareLimit: 0,
     },
     rewards: {
       points: 0,
@@ -43,6 +46,9 @@ export default function QuestForm({ quest, onSubmit, onCancel, loading = false }
           targetDate: quest.requirements.targetDate || '',
           activityCount: quest.requirements.activityCount || 0,
           streakDays: quest.requirements.streakDays || 0,
+          shareCount: quest.requirements.shareCount || 0,
+          shareContent: quest.requirements.shareContent || '',
+          dailyShareLimit: quest.requirements.dailyShareLimit || 0,
         },
         rewards: {
           points: quest.rewards.points,
@@ -84,6 +90,17 @@ export default function QuestForm({ quest, onSubmit, onCancel, loading = false }
       case 'activity_based':
         if (formData.requirements.activityCount <= 0) {
           newErrors.activityCount = 'Activity count must be greater than 0';
+        }
+        break;
+      case 'share_based':
+        if (formData.requirements.shareCount <= 0) {
+          newErrors.shareCount = 'Share count must be greater than 0';
+        }
+        if (!formData.requirements.shareContent || formData.requirements.shareContent.trim() === '') {
+          newErrors.shareContent = 'Share content is required for share-based quests';
+        }
+        if (formData.requirements.dailyShareLimit < 0) {
+          newErrors.dailyShareLimit = 'Daily share limit cannot be negative';
         }
         break;
     }
@@ -230,6 +247,7 @@ export default function QuestForm({ quest, onSubmit, onCancel, loading = false }
                 <option value="activity_based">Activity Based - Complete specific activities</option>
                 <option value="early_adopter">Early Adopter - Join before a specific date</option>
                 <option value="streak_based">Streak Based - Maintain a login streak</option>
+                <option value="share_based">Share Based - Share content on Farcaster</option>
               </select>
             </div>
           </div>
@@ -313,6 +331,69 @@ export default function QuestForm({ quest, onSubmit, onCancel, loading = false }
                   placeholder="Enter number of activities..."
                 />
                 {errors.activityCount && <p className="mt-2 text-sm text-red-600">{errors.activityCount}</p>}
+              </div>
+            )}
+
+            {formData.type === 'share_based' && (
+              <div className="space-y-6">
+                <div>
+                  <label htmlFor="shareCount" className="block text-sm font-semibold text-gray-700 mb-2">
+                    Total Shares Required *
+                  </label>
+                  <input
+                    type="number"
+                    id="shareCount"
+                    min="1"
+                    value={formData.requirements.shareCount}
+                    onChange={(e) => handleRequirementsChange('shareCount', parseInt(e.target.value))}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                      errors.shareCount ? 'border-red-300' : 'border-gray-300'
+                    }`}
+                    placeholder="Enter total number of shares needed..."
+                  />
+                  {errors.shareCount && <p className="mt-2 text-sm text-red-600">{errors.shareCount}</p>}
+                </div>
+
+                <div>
+                  <label htmlFor="shareContent" className="block text-sm font-semibold text-gray-700 mb-2">
+                    Share Content *
+                  </label>
+                  <textarea
+                    id="shareContent"
+                    rows={4}
+                    value={formData.requirements.shareContent}
+                    onChange={(e) => handleRequirementsChange('shareContent', e.target.value)}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                      errors.shareContent ? 'border-red-300' : 'border-gray-300'
+                    }`}
+                    placeholder="Enter the content users will share on Farcaster..."
+                  />
+                  {errors.shareContent && <p className="mt-2 text-sm text-red-600">{errors.shareContent}</p>}
+                  <p className="mt-2 text-sm text-gray-500">
+                    This text will be pre-filled when users open the Farcaster composer. They can edit it before sharing.
+                  </p>
+                </div>
+
+                <div>
+                  <label htmlFor="dailyShareLimit" className="block text-sm font-semibold text-gray-700 mb-2">
+                    Daily Share Limit
+                  </label>
+                  <input
+                    type="number"
+                    id="dailyShareLimit"
+                    min="0"
+                    value={formData.requirements.dailyShareLimit}
+                    onChange={(e) => handleRequirementsChange('dailyShareLimit', parseInt(e.target.value))}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
+                      errors.dailyShareLimit ? 'border-red-300' : 'border-gray-300'
+                    }`}
+                    placeholder="Enter max shares per day (0 = no limit)..."
+                  />
+                  {errors.dailyShareLimit && <p className="mt-2 text-sm text-red-600">{errors.dailyShareLimit}</p>}
+                  <p className="mt-2 text-sm text-gray-500">
+                    Set to 0 for no daily limit, or specify max shares per day (e.g., 1 = once per day, 3 = three times per day)
+                  </p>
+                </div>
               </div>
             )}
           </div>

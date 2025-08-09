@@ -16,12 +16,15 @@ export interface Quest {
   id: string;
   title: string;
   description: string;
-  type: 'early_adopter' | 'activity_based' | 'streak_based';
+  type: 'early_adopter' | 'activity_based' | 'streak_based' | 'share_based';
   requirements: {
     dailyLogins?: number;
     targetDate?: string;
     activityCount?: number;
     streakDays?: number;
+    shareCount?: number;
+    shareContent?: string;
+    dailyShareLimit?: number;
   };
   rewards: {
     points: number;
